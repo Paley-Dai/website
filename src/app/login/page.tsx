@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
     const router = useRouter()
     return (
         <Layout>

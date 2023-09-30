@@ -1,6 +1,6 @@
 import Layout from "@/components/internal/Layout";
 
-export default function page(){
+export default function Page(){
     return(
         <Layout>
             
