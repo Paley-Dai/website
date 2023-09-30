@@ -1,0 +1,104 @@
+'use client'
+// Import necessary dependencies and styles
+import { useState } from "react";
+import { ethers } from "ethers";
+
+import Layout from "@/components/Layout";
+
+// Define the ABI and contract address
+const ABI = [
+  {
+    "inputs": [],
+    "name": "incrementCount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "count",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
+
+const contractAddress = "0xfb3af349Ea2c5059659A8dD8eEcf2D137266eA8C";
+
+export default function Page() { // Fixed function name "page" -> "Page"
+  const [walletAddress, setWalletAddress] = useState("");
+
+  async function requestAccount() {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+
+        setWalletAddress(accounts[0]);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      console.log("Not Detected");
+    }
+  }
+
+  async function getBalance() { // Renamed function from "getMoney" to "getBalance"
+    if (window.ethereum) {
+      try {
+        const balance = await window.ethereum.request({
+          method: 'eth_getBalance',
+          params: [
+            walletAddress,
+            "latest"
+          ]
+        });
+        console.log(balance);
+
+        // setWalletAddress(balance);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      console.log("Not Detected");
+    }
+  }
+
+  async function connectWallet() {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable(); // Request user to connect the wallet
+        const provider = new ethers.providers.Web3Provider(window.ethereum).getSigner();
+        const numberContract = new ethers.Contract(contractAddress, ABI, provider);
+        const num = await numberContract.incrementCount();
+        console.log(num.toString());
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      console.log("Not Detected");
+    }
+  }
+
+  return (
+    <Layout>
+      <button onClick={requestAccount} className="bg-black text-white rounded-xl p-4 px-8">
+        Connect Wallet
+      </button>
+      <button onClick={getBalance} className="bg-black text-white rounded-xl p-4 px-8">
+        Get Balance
+      </button>
+      <button onClick={connectWallet} className="bg-black text-white rounded-xl p-4 px-8">
+        Connect Wallet (Alternative)
+      </button>
+      <p>Wallet Address: {walletAddress}</p>
+    </Layout>
+  )
+}
